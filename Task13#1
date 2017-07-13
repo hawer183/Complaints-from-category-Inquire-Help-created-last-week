@@ -1,0 +1,35 @@
+// Use in Script - Background:
+function scriptedFilter() {
+	var gr = new GlideRecord("incident");
+	gr.addQuery('category', 'inquiry');
+	gr.query();
+	i = 0;
+	while(gr.next()){
+		gs.print("Number: " + gr.number);
+		gs.print("Short.Desc.: " + gr.short_description);
+		gs.print("Priority: " + gr.state);
+		gs.print("-----------------------");
+		i++;
+	}
+	gs.print("Count = " +i);
+}
+scriptedFilter();
+
+
+// Use in Cript Includes:
+// in filter: "Number" "Is" "javascript: new Complaints_2().scriptedFilter()" 
+var Complaints_2 = Class.create();
+Complaints_2.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+	scriptedFilter: function() {
+		var arrState  = [];
+		var gr = new GlideRecord("incident");
+		gr.addQuery('category', 'inquiry');
+		gr.addEncodedQuery('sys_created_onONLast week@javascript:gs.beginningOfLastWeek()@javascript:gs.endOfLastWeek()');
+		gr.query();
+		while (gr.next()){
+			arrState.push(gr.number.toString());
+		}
+		return arrState;
+	},
+	type: 'Complaints_2'
+});
